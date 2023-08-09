@@ -8,11 +8,11 @@ public class CharacterInputHandler : MonoBehaviour
     Vector2 _viewInputVector = Vector2.zero;
     bool _isJumpPressed = false;
 
-    CharacterMovementHandler characterMovementHandler;
+    LocalCameraHandler localCameraHandler;
     // Start is called before the first frame update
     void Awake()
     {
-        characterMovementHandler = GetComponent<CharacterMovementHandler>();
+        localCameraHandler = GetComponentInChildren<LocalCameraHandler>();
     }
 
     /// <summary>
@@ -31,23 +31,25 @@ public class CharacterInputHandler : MonoBehaviour
         _viewInputVector.x = Input.GetAxis("Mouse X");
         _viewInputVector.y = Input.GetAxis("Mouse Y") * -1;
 
-        characterMovementHandler.SetViewInputVector(_viewInputVector);
-
         _moveInputVector.x = Input.GetAxis("Horizontal");
         _moveInputVector.y = Input.GetAxis("Vertical");
 
-        _isJumpPressed = Input.GetButtonDown("Jump");
+        if (Input.GetButtonDown("Jump"))
+            _isJumpPressed = true;
+
+        localCameraHandler.SetViewInputVector(_viewInputVector);
     }
 
     public NetworkInputData GetNetworkInput()
     {
         NetworkInputData networkInputData = new NetworkInputData();
 
-        networkInputData._rotationInput = _viewInputVector.x;
+        networkInputData._aimForwardVector = localCameraHandler.transform.forward;
 
         networkInputData._movementInput = _moveInputVector;
 
         networkInputData.isJumpPressed = _isJumpPressed;
+        _isJumpPressed = false;
 
         return networkInputData;
     }

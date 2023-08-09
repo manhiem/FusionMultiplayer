@@ -5,8 +5,6 @@ using Fusion;
 
 public class CharacterMovementHandler : NetworkBehaviour
 {
-    Vector2 _viewInput;
-    float _camRotationX = 0;
     NetworkCharacterControllerPrototypeCustom _networkCharacterControllerPrototypeCustom;
     public Camera _localCamera;
 
@@ -20,20 +18,15 @@ public class CharacterMovementHandler : NetworkBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        _camRotationX += _viewInput.x * Time.deltaTime * _networkCharacterControllerPrototypeCustom.viewUpDownRotationSpeed;
-        _camRotationX = Mathf.Clamp(_camRotationX, -90, 90);
-
-        _localCamera.transform.localRotation = Quaternion.Euler(_camRotationX, 0, 0);
-    }
-
     public override void FixedUpdateNetwork()
     {
         if (GetInput(out NetworkInputData networkInputData))
         {
-            _networkCharacterControllerPrototypeCustom.Rotate(networkInputData._rotationInput);
+            transform.forward = networkInputData._aimForwardVector;
+
+            Quaternion rotation = transform.rotation;
+            rotation.eulerAngles = new Vector3(0, rotation.eulerAngles.y, rotation.eulerAngles.z);
+            transform.rotation = rotation;
 
             Vector3 _moveDirection = transform.forward * networkInputData._movementInput.y + transform.right * networkInputData._movementInput.x;
             _moveDirection.Normalize();
@@ -42,11 +35,16 @@ public class CharacterMovementHandler : NetworkBehaviour
 
             if (networkInputData.isJumpPressed)
                 _networkCharacterControllerPrototypeCustom.Jump();
+
+            CheckFallRespawn();
         }
     }
 
-    public void SetViewInputVector(Vector2 vI)
+    void CheckFallRespawn()
     {
-        _viewInput = vI;
+        if (transform.position.y < -12)
+        {
+            transform.position = Utils.GetRandomSpawnPoint();
+        }
     }
 }
