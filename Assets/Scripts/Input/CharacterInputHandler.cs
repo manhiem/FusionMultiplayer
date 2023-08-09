@@ -7,12 +7,15 @@ public class CharacterInputHandler : MonoBehaviour
     Vector3 _moveInputVector = Vector2.zero;
     Vector2 _viewInputVector = Vector2.zero;
     bool _isJumpPressed = false;
+    bool _isFirePressed = false;
 
     LocalCameraHandler localCameraHandler;
+    CharacterMovementHandler characterMovementHandler;
     // Start is called before the first frame update
     void Awake()
     {
         localCameraHandler = GetComponentInChildren<LocalCameraHandler>();
+        characterMovementHandler = GetComponent<CharacterMovementHandler>() >;
     }
 
     /// <summary>
@@ -28,6 +31,10 @@ public class CharacterInputHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        if (!characterMovementHandler.Object.HasAuthority)
+            return;
+
         _viewInputVector.x = Input.GetAxis("Mouse X");
         _viewInputVector.y = Input.GetAxis("Mouse Y") * -1;
 
@@ -36,6 +43,9 @@ public class CharacterInputHandler : MonoBehaviour
 
         if (Input.GetButtonDown("Jump"))
             _isJumpPressed = true;
+
+        if (Input.GetButtonDown("Fire1"))
+            _isFirePressed = true;
 
         localCameraHandler.SetViewInputVector(_viewInputVector);
     }
@@ -49,7 +59,9 @@ public class CharacterInputHandler : MonoBehaviour
         networkInputData._movementInput = _moveInputVector;
 
         networkInputData.isJumpPressed = _isJumpPressed;
+        networkInputData.isFireInputPressed = _isFirePressed;
         _isJumpPressed = false;
+        _isFirePressed = false;
 
         return networkInputData;
     }
