@@ -5,12 +5,19 @@ using Fusion;
 
 public class CharacterMovementHandler : NetworkBehaviour
 {
-    NetworkCharacterControllerPrototypeCustom _networkCharacterControllerPrototypeCustom;
-    public Camera _localCamera;
+    bool isRespawnRequested = false;
 
+    NetworkCharacterControllerPrototypeCustom _networkCharacterControllerPrototypeCustom;
+    HPHandler hPHandler;
+    public Camera _localCamera;
+    NetworkInGameMessages networkInGameMessages;
+    NetworkPlayer networkPlayer;
     private void Awake()
     {
         _networkCharacterControllerPrototypeCustom = GetComponent<NetworkCharacterControllerPrototypeCustom>();
+        hPHandler = GetComponent<HPHandler>();
+        networkInGameMessages = GetComponent<NetworkInGameMessages>();
+        networkPlayer = GetComponent<NetworkPlayer>();
     }
     // Start is called before the first frame update
     void Start()
@@ -20,6 +27,18 @@ public class CharacterMovementHandler : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
+        if (Object.HasStateAuthority)
+        {
+            if (isRespawnRequested)
+            {
+                Respawn();
+                return;
+            }
+
+            if (hPHandler.isDead)
+                return;
+        }
+
         if (GetInput(out NetworkInputData networkInputData))
         {
             transform.forward = networkInputData._aimForwardVector;
@@ -44,7 +63,29 @@ public class CharacterMovementHandler : NetworkBehaviour
     {
         if (transform.position.y < -12)
         {
-            transform.position = Utils.GetRandomSpawnPoint();
+            if (Object.HasStateAuthority)
+            {
+                Debug.Log($"{Time.time} Respawn due to fall outside of map at position {transform.position}");
+                networkInGameMessages.SendInGameRPCMessages(networkPlayer.nickName.ToString(), "fell off the world");
+                Respawn();
+            }
         }
+    }
+
+    public void RequestSpawn()
+    {
+        isRespawnRequested = true;
+    }
+
+    void Respawn()
+    {
+        _networkCharacterControllerPrototypeCustom.TeleportToPosition(Utils.GetRandomSpawnPoint());
+        hPHandler.OnRespawned();
+        isRespawnRequested = false;
+    }
+
+    public void SetCharacterControllerEnabled(bool isEnabled)
+    {
+        _networkCharacterControllerPrototypeCustom.Controller.enabled = isEnabled;
     }
 }

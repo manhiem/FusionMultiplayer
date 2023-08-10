@@ -1,8 +1,14 @@
 fileFormatVersion: 2
 guid: d0e876afca6beb74ba8b13b5aba9cb0a
 ModelImporter:
-  serializedVersion: 22200
-  internalIDToNameTable: []
+  serializedVersion: 21300
+  internalIDToNameTable:
+  - first:
+      74: -9165865403480842816
+    second: Root|0.Targeting Pose
+  - first:
+      74: -8630955994762890147
+    second: Root|Jump
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -40,7 +46,6 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
-    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -68,7 +73,6 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -101,7 +105,6 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
-  importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 

@@ -15,7 +15,7 @@ public class CharacterInputHandler : MonoBehaviour
     void Awake()
     {
         localCameraHandler = GetComponentInChildren<LocalCameraHandler>();
-        characterMovementHandler = GetComponent<CharacterMovementHandler>() >;
+        characterMovementHandler = GetComponent<CharacterMovementHandler>();
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ public class CharacterInputHandler : MonoBehaviour
     void Update()
     {
 
-        if (!characterMovementHandler.Object.HasAuthority)
+        if (!characterMovementHandler.Object.HasInputAuthority)
             return;
 
         _viewInputVector.x = Input.GetAxis("Mouse X");
